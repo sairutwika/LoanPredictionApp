@@ -7,5 +7,3 @@ This project predicts loan approval based on applicant data using a trained Logi
 - Predict Approval (Yes/No)
 - Download CSV with predictions
 
-## Live App
-Try it here: [Loan Prediction App](https://share.streamlit.io/sairutwika/LoanPredictionApp/main/app.py)

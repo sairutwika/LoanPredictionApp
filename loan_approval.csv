@@ -1,0 +1,11 @@
+ApplicantIncome,CoapplicantIncome,LoanAmount,Credit_History,Loan_Status
+2500,0,100,1,Y
+4000,1500,200,1,Y
+3000,0,150,0,N
+5000,1800,250,1,Y
+6000,0,300,1,Y
+3500,2000,180,0,N
+8000,0,350,1,Y
+12000,3000,400,1,Y
+1500,0,120,0,N
+7000,0,280,1,Y

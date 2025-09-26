@@ -2,47 +2,47 @@ import streamlit as st
 import pandas as pd
 import joblib
 
-# Load trained model and encoders
+# Load model and encoders
 model = joblib.load("loan_model.pkl")
 encoders = joblib.load("encoders.pkl")
 
-st.title("Loan Approval Prediction App 💰")
-st.write("Upload a CSV file with the same features as the training dataset (without target column)")
+st.title("Loan Prediction App")
 
-uploaded_file = st.file_uploader("Choose a CSV file", type="csv")
+# Upload CSV file
+uploaded_file = st.file_uploader("Upload CSV file", type=["csv"])
 
-if uploaded_file is not None:
+if uploaded_file:
     data = pd.read_csv(uploaded_file)
+    st.write("Input Data:")
+    st.dataframe(data)
 
-    # Drop target column if present
+    # Keep original Loan_Status if exists
     if 'Loan_Status' in data.columns:
-        data = data.drop('Loan_Status', axis=1)
+        original_status = data['Loan_Status']
 
-    # Encode categorical columns using saved encoders
+    # Encode categorical columns
     for col, le in encoders.items():
         if col in data.columns:
-            try:
-                data[col] = le.transform(data[col].astype(str))
-            except ValueError:
-                st.warning(f"Column '{col}' has unseen categories in uploaded data. They will be encoded as -1.")
-                data[col] = data[col].map(lambda x: le.transform([str(x)])[0] if str(x) in le.classes_ else -1)
+            data[col] = le.transform(data[col])
 
-    # Fill missing values
-    data.fillna(data.median(), inplace=True)
-
-    # Predict approval
+    # Make predictions
     predictions = model.predict(data)
-    data['Approval'] = ['Yes' if i==1 else 'No' for i in predictions]
 
-    # Display predictions
+    # Add predictions as a new column
+    data['Approval'] = ["Yes" if p == 1 else "No" for p in predictions]
+
+    # Restore original Loan_Status if it exists
+    if 'Loan_Status' in data.columns:
+        data['Loan_Status'] = original_status
+
     st.write("Predictions:")
     st.dataframe(data)
 
-    # Download CSV with predictions
+    # Download the output CSV
     csv = data.to_csv(index=False)
     st.download_button(
-        label="Download CSV with Approval",
+        label="Download Predictions as CSV",
         data=csv,
-        file_name='loan_predictions.csv',
-        mime='text/csv'
+        file_name="loan_predictions.csv",
+        mime="text/csv"
     )
